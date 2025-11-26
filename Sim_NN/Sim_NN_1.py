@@ -107,7 +107,59 @@ def compute_cost(A2,Y,parameters):
 
 # 循环中的第二步：反向传播
 def backward_propagation(parameters,cache,X,Y):
+    # 1.获取参数和缓存中的输出
+    W1 = parameters["W1"]
+    W2 = parameters["W2"]
+    A1 = cache["A1"]
+    A2 = cache["A2"]
+    m = X.shape[1]
 
+    # 2.反向传播计算梯度
+    # 最后一层的参数梯度计算
+    dZ2 = A2 - Y                      
+    dW2 = (1/m) * np.dot(dZ2,A1.T)
+    db2 = (1/m) * np.sum(dZ2,axis=1)  
+    
+    # 隐藏层的参数梯度计算
+    dZ1 = np.dot(W2.T,dZ2) * (1 - np.power(A1,2))  
+    dW1 = (1/m) * np.dot(dZ1,X.T)
+    db1 = (1/m) * np.sum(dZ1,axis=1)
+
+    grads = {
+        "dW1":dW1,
+        "db1":db1,
+        "dW2":dW2,
+        "db2":db2
+    }
+    return grads
+
+# 循环中的第三步：参数更新
+def update_parameters(parameters,grads,learning_rate=1.2):
+    # 1.获取参数和梯度
+    W1 = parameters["W1"]
+    b1 = parameters["b1"]
+    W2 = parameters["W2"]
+    b2 = parameters["b2"]
+
+    dW1 = grads["dW1"]
+    db1 = grads["db1"]
+    dW2 = grads["dW2"]
+    db2 = grads["db2"]
+
+    # 2.更新参数
+    W1 = W1 - learning_rate * dW1
+    b1 = b1 - learning_rate * db1.reshape(b1.shape)
+    W2 = W2 - learning_rate * dW2
+    b2 = b2 - learning_rate * db2.reshape(b2.shape)
+
+    parameters = {
+        "W1":W1,
+        "b1":b1,
+        "W2":W2,
+        "b2":b2
+    }
+    return parameters
+    
 
 
 
